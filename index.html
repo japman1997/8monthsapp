@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mood Messages 💌</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #ffe4ec;
+      color: #c71585;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 1rem;
+    }
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    button {
+      padding: 1rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      background-color: #ffb6c1;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: #ff69b4;
+    }
+    .card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    img {
+      margin-top: 1rem;
+      max-width: 100%;
+      border-radius: 1rem;
+    }
+    audio {
+      margin-top: 1rem;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mood Messages 💌</h1>
+  <div class="buttons">
+    <button onclick="showMessage('happy')">😊 Happy</button>
+    <button onclick="showMessage('down')">😔 Down</button>
+    <button onclick="showMessage('surprise')">🎁 Surprise</button>
+    <button onclick="showMessage('adventure')">🌍 Adventure</button>
+  </div>
+  <div id="messageCard" class="card" style="display: none;">
+    <p id="messageText"></p>
+    <img id="messageImage" src="" alt="" style="display: none;" />
+    <audio id="messageAudio" controls style="display: none;"></audio>
+  </div>
+
+  <script>
+    const messages = {};
+
+    async function loadMessages(mood) {
+      const response = await fetch(`${mood}.json`);
+      messages[mood] = await response.json();
+    }
+
+    async function showMessage(mood) {
+      if (!messages[mood]) {
+        await loadMessages(mood);
+      }
+
+      const msgList = messages[mood];
+      const randomMsg = msgList[Math.floor(Math.random() * msgList.length)];
+
+      document.getElementById('messageCard').style.display = 'block';
+      document.getElementById('messageText').textContent = randomMsg.text || "";
+
+      // Image
+      const imageEl = document.getElementById('messageImage');
+      if (randomMsg.image) {
+        imageEl.src = randomMsg.image;
+        imageEl.style.display = 'block';
+      } else {
+        imageEl.style.display = 'none';
+      }
+
+      // Audio
+      const audioEl = document.getElementById('messageAudio');
+      if (randomMsg.audio) {
+        audioEl.src = randomMsg.audio;
+        audioEl.style.display = 'block';
+      } else {
+        audioEl.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>
